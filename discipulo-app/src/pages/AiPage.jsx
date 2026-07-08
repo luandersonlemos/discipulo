@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AI_DAILY_LIMIT,
@@ -10,17 +10,20 @@ import {
 import { getTodayDevotional, truncateText } from "../lib/devotional.js";
 import { isPremium } from "../lib/subscription.js";
 import {
+  clearChatSession,
+  getChatSession,
   getTodayMomentSelection,
   hasTodayMomentChoice
 } from "../lib/storage.js";
 
 export default function AiPage() {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("A resposta aparecerá aqui.");
+  const [messages, setMessages] = useState(() => getChatSession());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [source, setSource] = useState("");
   const [usageKey, setUsageKey] = useState(0);
+  const chatEndRef = useRef(null);
   void usageKey;
 
   const premium = isPremium();
@@ -30,10 +33,14 @@ export default function AiPage() {
   const used = getAiUsageToday();
 
   const contextText = !hasTodayMomentChoice()
-    ? "Comece o devocional de hoje para personalizar as respostas."
+    ? "Comece o devocional de hoje para personalizar a conversa."
     : selection?.skipped
       ? `Devocional: ${devotional.title} — ${devotional.verse}`
-      : `Você escreveu: "${truncateText(selection.userText, 80)}" · Devocional: ${devotional.title} — ${devotional.verse}`;
+      : `Você escreveu: "${truncateText(selection.userText, 80)}" · Devocional: ${devotional.title}`;
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   async function handleAsk(questionText = question) {
     setError("");
@@ -41,7 +48,7 @@ export default function AiPage() {
 
     try {
       const result = await askAi(questionText);
-      setAnswer(result.answer);
+      setMessages(getChatSession());
       setSource(result.source === "openai" ? "IA real (OpenAI)" : "Modo local (simulado)");
       setQuestion("");
       setUsageKey((value) => value + 1);
@@ -52,13 +59,19 @@ export default function AiPage() {
     }
   }
 
+  function handleClearChat() {
+    clearChatSession();
+    setMessages([]);
+    setSource("");
+  }
+
   const limitReached = !premium && remaining <= 0;
 
   return (
     <>
       <section className="card">
-        <h3>💬 Pergunte sobre o devocional</h3>
-        <p className="muted">Escreva uma dúvida sobre o texto, aplicação ou vida cristã.</p>
+        <h3>💬 Converse sobre o devocional</h3>
+        <p className="muted">Uma conversa, não respostas prontas. A IA acompanha o que você está vivendo.</p>
         <p className="ai-context muted">{contextText}</p>
 
         <div className="ai-usage">
@@ -81,12 +94,46 @@ export default function AiPage() {
           </p>
         )}
 
+        <div className="chat-thread">
+          {messages.length === 0 && (
+            <p className="muted chat-empty">
+              Nenhuma mensagem ainda. Comece perguntando sobre o devocional ou compartilhe o que está sentindo.
+            </p>
+          )}
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`chat-bubble ${message.role === "user" ? "chat-bubble-user" : "chat-bubble-assistant"}`}
+            >
+              <span className="chat-role">{message.role === "user" ? "Você" : "Discípulo IA"}</span>
+              <p>{message.content}</p>
+            </div>
+          ))}
+          {loading && (
+            <div className="chat-bubble chat-bubble-assistant">
+              <span className="chat-role">Discípulo IA</span>
+              <p className="muted">Pensando...</p>
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
+
+        {source && <p className="muted small">Fonte: {source}</p>}
+
         <textarea
           rows={3}
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ex: O que significa permanecer na Palavra?"
+          placeholder="Ex: Isso faz sentido para o que estou passando? Como aplico isso hoje?"
           disabled={loading || limitReached}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              if (!loading && !limitReached && question.trim()) {
+                handleAsk();
+              }
+            }
+          }}
         />
         <div className="ai-suggestions">
           {AI_SUGGESTIONS.map((suggestion) => (
@@ -102,15 +149,16 @@ export default function AiPage() {
           ))}
         </div>
         {error && <p className="error">{error}</p>}
-        <button type="button" disabled={loading || limitReached} onClick={() => handleAsk()}>
-          {loading ? "Pensando..." : "Perguntar"}
-        </button>
-      </section>
-
-      <section className="card">
-        <h3>🤖 Resposta</h3>
-        {source && <p className="muted small">Fonte: {source}</p>}
-        <p className="ai-answer">{answer}</p>
+        <div className="chat-actions">
+          <button type="button" disabled={loading || limitReached} onClick={() => handleAsk()}>
+            {loading ? "Enviando..." : "Enviar"}
+          </button>
+          {messages.length > 0 && (
+            <button type="button" className="btn-secondary" disabled={loading} onClick={handleClearChat}>
+              Limpar conversa
+            </button>
+          )}
+        </div>
       </section>
     </>
   );

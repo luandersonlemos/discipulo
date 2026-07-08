@@ -5,12 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
 };
 
-const SYSTEM_PROMPT = `Você é um assistente bíblico do app Discípulo.
+const SYSTEM_PROMPT = `Você é um pastor amigo no app Discípulo — alguém que conversa, não que prega sermões prontos.
+
 Linha editorial: evangélica, pentecostal/contemporânea, fiel às Escrituras.
-Responda em português brasileiro, linguagem acessível e pastoral.
-Baseie-se no contexto do devocional fornecido.
-Não invente versículos. Se não souber, diga com humildade.
-Foque em aplicação prática e edificação. Seja conciso (máximo 4 parágrafos).`;
+Idioma: português brasileiro, acessível e pastoral.
+
+Como conversar:
+- Responda com empatia ao que a pessoa compartilhou
+- Use o contexto do devocional de hoje como base, mas não repita tudo
+- Faça perguntas de acompanhamento quando fizer sentido (1 pergunta por resposta)
+- Seja conciso: 2-4 parágrafos curtos
+- Não invente versículos — cite apenas passagens reais
+- Evite respostas genéricas; conecte com o que a pessoa disse
+- Tom: acolhedor, direto, sem julgamento`;
 
 const FREE_DAILY_LIMIT = 5;
 
@@ -45,7 +52,7 @@ Deno.serve(async (req) => {
     }
 
     const userId = userData.user.id;
-    const { question, context } = await req.json();
+    const { question, context, history = [] } = await req.json();
 
     if (!question?.trim()) {
       return new Response(JSON.stringify({ error: "Pergunta vazia." }), {
@@ -92,14 +99,26 @@ Deno.serve(async (req) => {
       });
     }
 
-    const userMessage = `Contexto do devocional de hoje:
+    const contextBlock = `Contexto do devocional de hoje:
 Título: ${context?.devotionalTitle ?? "—"}
 Versículo: ${context?.verse ?? "—"}
 Resumo: ${context?.summary ?? "—"}
 Aplicação: ${context?.application ?? "—"}
-${context?.userText ? `O usuário compartilhou: "${context.userText}"` : ""}
+${context?.userText ? `O usuário compartilhou ao começar o dia: "${context.userText}"` : ""}`;
 
-Pergunta do usuário: ${question.trim()}`;
+    const recentHistory = Array.isArray(history)
+      ? history.slice(-8).filter((msg) => msg?.role && msg?.content)
+      : [];
+
+    const messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: contextBlock },
+      ...recentHistory.map((msg) => ({
+        role: msg.role === "assistant" ? "assistant" : "user",
+        content: msg.content
+      })),
+      { role: "user", content: question.trim() }
+    ];
 
     const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -109,12 +128,9 @@ Pergunta do usuário: ${question.trim()}`;
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: userMessage }
-        ],
-        temperature: 0.7,
-        max_tokens: 600
+        messages,
+        temperature: 0.8,
+        max_tokens: 500
       })
     });
 

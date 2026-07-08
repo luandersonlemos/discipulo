@@ -74,7 +74,13 @@ export default function DevotionalPanel({ onRefresh }) {
   return (
     <section className="card devotional-card">
       <p className="label">
-        {selection?.skipped ? "Devocional do dia" : "Devocional montado para você"}
+        {selection?.skipped
+          ? "Devocional do dia"
+          : selection?.aiGenerated
+            ? "Devocional criado para você pela IA"
+            : selection?.devotional
+              ? "Devocional personalizado para você"
+              : "Devocional montado para você"}
       </p>
 
       {selection?.userText && (

@@ -75,6 +75,14 @@ function buildPersonalizedDevotional(baseDevotional, userText) {
 export function getTodayDevotional() {
   const selection = getTodayMomentSelection();
 
+  if (selection?.devotional) {
+    return {
+      ...selection.devotional,
+      userText: selection.userText,
+      personalized: true
+    };
+  }
+
   if (selection?.userText) {
     const moment = getMomentById(selection.momentId);
     const baseDevotional = moment.devotionals[selection.variantIndex];
@@ -96,17 +104,25 @@ export function getTodayDevotional() {
   };
 }
 
-export function saveMomentFromText(userText) {
+export function saveMomentFromText(userText, devotional = null, source = null) {
   const matchedMoment = detectMomentFromText(userText);
   const variantIndex = pickVariantIndex(matchedMoment.id, userText);
 
-  return {
+  const payload = {
     date: getTodayKey(),
     userText,
-    momentId: matchedMoment.id,
+    momentId: devotional?.momentId || matchedMoment.id,
     variantIndex,
     skipped: false
   };
+
+  if (devotional) {
+    payload.devotional = devotional;
+    payload.source = source;
+    payload.aiGenerated = Boolean(devotional.aiGenerated);
+  }
+
+  return payload;
 }
 
 export function saveSkippedMoment() {

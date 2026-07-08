@@ -131,6 +131,30 @@ export function saveAiQuestion(question, answer) {
   writeJson("aiHistory", aiHistory);
 }
 
+export function getChatSession() {
+  const session = readJson("chatSession", null);
+  return session?.date === getTodayKey() ? session.messages : [];
+}
+
+export function saveChatMessage(role, content) {
+  const messages = getChatSession();
+  messages.push({
+    id: Date.now(),
+    role,
+    content,
+    createdAt: new Date().toISOString()
+  });
+
+  writeJson("chatSession", {
+    date: getTodayKey(),
+    messages
+  });
+}
+
+export function clearChatSession() {
+  writeJson("chatSession", { date: getTodayKey(), messages: [] });
+}
+
 export function getFavoriteVerses() {
   return readJson("favoriteVerses", []);
 }
