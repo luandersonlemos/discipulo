@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discípulo</title>
+    <link rel="stylesheet" href="CSS/style.css" />
+</head>
+
+<body>
+
+    <div class="app">
+
+        <header class="header">
+            <div>
+                <p class="label" id="greeting">Olá</p>
+                <h1>Discípulo</h1>
+            </div>
+            <div class="streak">
+                🔥 <span id="streakNumber">0</span>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="home">Início</button>
+            <button class="tab-button" data-tab="spiritual">Jornada</button>
+            <button class="tab-button" data-tab="bible">Bíblia</button>
+            <button class="tab-button" data-tab="plans">Planos</button>
+            <button class="tab-button" data-tab="ai">IA</button>
+            <button class="tab-button" data-tab="journal">Diário</button>
+            <button class="tab-button" data-tab="prayer">Oração</button>
+            <button class="tab-button" data-tab="history">Histórico</button>
+        </nav>
+
+        <main>
+
+            <!-- HOME -->
+            <section id="home" class="tab-content active">
+
+                <section class="card welcome-card">
+                    <p class="label" id="welcomeDay"></p>
+                    <h2 id="welcomeName">Olá 👋</h2>
+                    <p class="welcome-streak">
+                        Você está há <strong id="streakText">0</strong> dias caminhando com Deus.
+                    </p>
+                    <button type="button" class="link-button" id="editNameButton">Alterar nome</button>
+                    <p class="welcome-journal muted" id="lastJournalPreview"></p>
+                </section>
+
+                <section class="journey-grid">
+                    <article class="journey-card journey-card--highlight journey-card--clickable" id="readingCard" data-tab-link="bible">
+                        <span class="journey-icon">📖</span>
+                        <div>
+                            <p class="journey-label">Leitura de hoje</p>
+                            <strong id="todayReading">—</strong>
+                            <small id="readingTime">8 minutos</small>
+                        </div>
+                    </article>
+
+                    <article class="journey-card">
+                        <span class="journey-icon">🙏</span>
+                        <div>
+                            <p class="journey-label">Tempo de oração</p>
+                            <strong id="todayPrayerTime">0 min</strong>
+                            <small id="prayerGoalPreview">Meta: 15 min</small>
+                        </div>
+                    </article>
+
+                    <article class="journey-card">
+                        <span class="journey-icon">🎯</span>
+                        <div>
+                            <p class="journey-label">Missão do dia</p>
+                            <strong id="todayMission">—</strong>
+                        </div>
+                    </article>
+
+                    <article class="journey-card journey-card--clickable" id="spiritualJourneyCard" data-tab-link="spiritual">
+                        <span class="journey-icon">🌱</span>
+                        <div>
+                            <p class="journey-label">Jornada espiritual</p>
+                            <strong id="spiritualJourneyPreview">0/6 tópicos</strong>
+                            <small id="spiritualJourneyLevel">Nível 1 — Fundamentos</small>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="card growth-card">
+                    <h3>📈 Seu crescimento</h3>
+                    <div class="growth-stats">
+                        <div class="growth-stat">
+                            <span>Plano atual</span>
+                            <strong id="growthPlanPercent">0%</strong>
+                        </div>
+                        <div class="growth-stat">
+                            <span>Devocionais</span>
+                            <strong id="growthDevotionalCount">0</strong>
+                        </div>
+                        <div class="growth-stat">
+                            <span>Diário</span>
+                            <strong id="growthJournalCount">0</strong>
+                        </div>
+                        <div class="growth-stat">
+                            <span>Status hoje</span>
+                            <strong id="todayStatus">Pendente</strong>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="growthProgressFill"></div>
+                    </div>
+                </section>
+
+                <p class="section-divider">Devocional de hoje</p>
+
+                <section class="actions" id="devotionalToggleSection">
+                    <button type="button" id="openDevotionalButton">Começar devocional de hoje</button>
+                </section>
+
+                <div id="devotionalContent" class="devotional-content hidden">
+
+                <section class="card hero">
+                    <p class="label" id="devotionalLabel">Tema do dia</p>
+                    <p class="moment-badge" id="devotionalMomentBadge" hidden></p>
+                    <h2 id="devotionalTitle">Carregando...</h2>
+                    <p id="devotionalVerse"></p>
+                    <button type="button" class="link-button" id="changeMomentButton">Reescrever como estou hoje</button>
+                </section>
+
+                <section class="card">
+                    <h3>💡 Entenda</h3>
+                    <p id="devotionalSummary"></p>
+                </section>
+
+                <section class="card">
+                    <h3>📜 Contexto</h3>
+                    <p id="devotionalContext"></p>
+                </section>
+
+                <section class="card">
+                    <h3>📖 Leitura bíblica</h3>
+                    <p class="bible-version-label muted" id="devotionalBibleVersion"></p>
+                    <div id="devotionalText" class="bible-passage muted">Carregando Escrituras...</div>
+                    <button type="button" class="link-button" id="openBibleFromDevotional">Abrir na Bíblia</button>
+                </section>
+
+                <section class="card">
+                    <h3>🎯 Aplicação prática</h3>
+                    <p id="devotionalApplication"></p>
+                </section>
+
+                <section class="card">
+                    <h3>🙏 Oração</h3>
+                    <p id="devotionalPrayer"></p>
+                </section>
+
+                <section class="card">
+                    <h3>⚡ Desafio do dia</h3>
+                    <p id="devotionalChallenge"></p>
+                </section>
+
+                <section class="actions">
+                    <button type="button" id="completeButton">Concluir devocional</button>
+                </section>
+
+                </div>
+
+                <section class="card evening-card">
+                    <h3>🌙 Como foi seu dia?</h3>
+                    <p class="muted">Você conseguiu viver o desafio de hoje?</p>
+                    <div class="reflection-options" id="reflectionOptions">
+                        <button type="button" class="reflection-btn" data-reflection="yes">Sim</button>
+                        <button type="button" class="reflection-btn" data-reflection="partial">Parcialmente</button>
+                        <button type="button" class="reflection-btn" data-reflection="no">Ainda não</button>
+                    </div>
+                    <p class="reflection-status muted" id="reflectionStatus"></p>
+                </section>
+
+            </section>
+
+            <!-- JORNADA ESPIRITUAL -->
+            <section id="spiritual" class="tab-content">
+                <section class="card">
+                    <h3>🌱 Sua jornada</h3>
+                    <p class="muted" id="spiritualLevelDescription"></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="spiritualProgressFill"></div>
+                    </div>
+                    <p id="spiritualProgressText">0% do nível atual</p>
+                </section>
+
+                <div id="spiritualLevelsList"></div>
+            </section>
+
+            <!-- BÍBLIA -->
+            <section id="bible" class="tab-content">
+                <section class="card">
+                    <h3>🔍 Buscar na Bíblia</h3>
+                    <input id="bibleSearchInput" type="text" placeholder="Ex: amor, fé, João 3:16" />
+                    <label class="bible-search-scope">
+                        <input id="bibleSearchAllBooks" type="checkbox" />
+                        Buscar em toda a Bíblia (pode demorar um pouco)
+                    </label>
+                    <p class="muted" id="bibleSearchHint">Digite uma referência ou uma palavra para buscar no livro selecionado abaixo.</p>
+                    <div class="bible-search-actions">
+                        <button type="button" id="bibleSearchButton">Buscar</button>
+                        <button type="button" class="btn-secondary hidden" id="bibleSearchCancelButton">Cancelar</button>
+                    </div>
+                    <ul class="bible-search-results" id="bibleSearchResults"></ul>
+                </section>
+
+                <section class="card">
+                    <h3>📖 Bíblia</h3>
+                    <p class="muted" id="bibleVersionLabel">Versão: Almeida (ACF)</p>
+                    <div class="bible-selectors">
+                        <select id="bibleBookSelect"></select>
+                        <select id="bibleChapterSelect"></select>
+                    </div>
+                    <button type="button" id="loadBibleButton">Ler capítulo</button>
+                    <button type="button" class="btn-secondary bible-secondary-btn" id="loadTodayReadingButton">Leitura de hoje</button>
+                </section>
+
+                <section class="card">
+                    <h3 id="biblePassageTitle">Selecione uma passagem</h3>
+                    <div id="biblePassageText" class="bible-passage muted">O texto bíblico aparecerá aqui.</div>
+                </section>
+
+                <section class="card">
+                    <h3>⭐ Versículos favoritos</h3>
+                    <ul class="favorite-verses-list" id="favoriteVersesList"></ul>
+                </section>
+            </section>
+
+            <!-- PLANOS -->
+            <section id="plans" class="tab-content">
+                <section class="card">
+                    <h3>📚 Plano atual</h3>
+                    <p id="currentPlanText">Nenhum plano selecionado ainda.</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="planProgressFill"></div>
+                    </div>
+                    <p id="planProgressText">0% concluído</p>
+                </section>
+
+                <section class="card">
+                    <h3>🗺️ Escolha um plano</h3>
+                    <div class="plans-list" id="plansList"></div>
+                </section>
+            </section>
+
+            <!-- IA -->
+            <section id="ai" class="tab-content">
+                <section class="card">
+                    <h3>💬 Pergunte sobre o devocional</h3>
+                    <p class="muted">
+                        Escreva uma dúvida sobre o texto, aplicação ou vida cristã.
+                    </p>
+                    <p class="ai-context muted" id="aiContext"></p>
+                    <textarea id="aiQuestionInput" placeholder="Ex: O que significa permanecer na Palavra?"></textarea>
+                    <div class="ai-suggestions">
+                        <button type="button" class="chip" data-question="Por que este devocional para o meu dia?">Por que este devocional?</button>
+                        <button type="button" class="chip" data-question="Como melhorar minha oração?">Melhorar oração</button>
+                        <button type="button" class="chip" data-question="Qual é o desafio de hoje?">Desafio de hoje</button>
+                    </div>
+                    <button type="button" id="askAiButton">Perguntar</button>
+                </section>
+
+                <section class="card">
+                    <h3>🤖 Resposta</h3>
+                    <p id="aiAnswer">A resposta aparecerá aqui.</p>
+                </section>
+            </section>
+
+            <!-- DIÁRIO -->
+            <section id="journal" class="tab-content">
+                <section class="card">
+                    <h3>📝 Diário espiritual</h3>
+                    <textarea id="journalInput" placeholder="O que Deus falou com você hoje?"></textarea>
+                    <button type="button" id="saveJournalButton">Salvar anotação</button>
+                </section>
+
+                <section class="card">
+                    <h3>📔 Entradas recentes</h3>
+                    <ul id="journalList"></ul>
+                </section>
+            </section>
+
+            <!-- ORAÇÃO -->
+            <section id="prayer" class="tab-content">
+                <section class="card timer-card">
+                    <h3>⏱️ Cronômetro de oração</h3>
+                    <p class="timer-display" id="timerDisplay">00:00</p>
+                    <p class="muted" id="timerSummary">Hoje: 0 min · Meta: 15 min</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="prayerGoalFill"></div>
+                    </div>
+                    <div class="timer-actions">
+                        <button type="button" id="startTimerButton">Iniciar</button>
+                        <button type="button" class="btn-secondary" id="pauseTimerButton" disabled>Pausar</button>
+                        <button type="button" class="btn-secondary" id="stopTimerButton" disabled>Salvar tempo</button>
+                    </div>
+                    <div class="timer-goal-row">
+                        <label for="prayerGoalInput">Meta diária (minutos)</label>
+                        <div class="timer-goal-controls">
+                            <input id="prayerGoalInput" type="number" min="1" max="180" value="15" />
+                            <button type="button" class="btn-secondary" id="saveGoalButton">Salvar meta</button>
+                        </div>
+                    </div>
+                    <ul class="timer-history" id="prayerSessionList"></ul>
+                </section>
+
+                <section class="card">
+                    <h3>🙏 Pedido de oração</h3>
+                    <input id="prayerInput" type="text" placeholder="Pelo que você quer orar?" />
+                    <button type="button" id="savePrayerButton">Salvar pedido</button>
+                </section>
+
+                <section class="card">
+                    <h3>📌 Meus pedidos</h3>
+                    <ul id="prayerList"></ul>
+                </section>
+            </section>
+
+            <!-- HISTÓRICO -->
+            <section id="history" class="tab-content">
+                <section class="card">
+                    <h3>📚 Histórico</h3>
+                    <ul id="historyList"></ul>
+                </section>
+            </section>
+
+        </main>
+
+    </div>
+
+    <div id="onboardingOverlay" class="onboarding-overlay hidden">
+        <section class="onboarding-modal card">
+            <div class="onboarding-progress" aria-hidden="true">
+                <span class="onboarding-dot active" data-onboarding-dot="1"></span>
+                <span class="onboarding-dot" data-onboarding-dot="2"></span>
+                <span class="onboarding-dot" data-onboarding-dot="3"></span>
+            </div>
+
+            <div class="onboarding-step" data-onboarding-step="1">
+                <p class="label">Bem-vindo ao Discípulo</p>
+                <h2>Seu companheiro diário com Deus</h2>
+                <p class="muted">Um espaço para devocional, oração, Bíblia e crescimento espiritual — um passo de cada vez.</p>
+                <label for="onboardingNameInput">Como você se chama?</label>
+                <input id="onboardingNameInput" type="text" maxlength="40" placeholder="Seu primeiro nome" autocomplete="name" />
+                <button type="button" id="onboardingNext1">Continuar</button>
+            </div>
+
+            <div class="onboarding-step hidden" data-onboarding-step="2">
+                <p class="label">Devocional personalizado</p>
+                <h2>Conte como está seu dia</h2>
+                <p class="muted">Todo dia você pode escrever com suas palavras — ansiedade, alegria, decisões, cansaço. O devocional será montado para o que você está vivendo.</p>
+                <ul class="onboarding-features">
+                    <li>✍️ Escreva livremente, sem frases prontas</li>
+                    <li>📖 Leitura bíblica real integrada ao texto</li>
+                    <li>⏭️ Prefere não compartilhar? Use o devocional padrão do dia</li>
+                </ul>
+                <div class="onboarding-actions">
+                    <button type="button" class="btn-secondary" id="onboardingBack2">Voltar</button>
+                    <button type="button" id="onboardingNext2">Entendi</button>
+                </div>
+            </div>
+
+            <div class="onboarding-step hidden" data-onboarding-step="3">
+                <p class="label">Meta de oração</p>
+                <h2>Quanto tempo quer orar por dia?</h2>
+                <p class="muted">Você pode ajustar depois na aba Oração. O cronômetro ajuda a cultivar constância.</p>
+                <div class="onboarding-goal-options" id="onboardingGoalOptions">
+                    <button type="button" class="onboarding-goal-btn" data-goal="5">5 min</button>
+                    <button type="button" class="onboarding-goal-btn" data-goal="10">10 min</button>
+                    <button type="button" class="onboarding-goal-btn active" data-goal="15">15 min</button>
+                    <button type="button" class="onboarding-goal-btn" data-goal="20">20 min</button>
+                    <button type="button" class="onboarding-goal-btn" data-goal="30">30 min</button>
+                </div>
+                <label for="onboardingPrayerGoalInput">Ou defina outro valor</label>
+                <input id="onboardingPrayerGoalInput" type="number" min="1" max="180" value="15" />
+                <div class="onboarding-actions">
+                    <button type="button" class="btn-secondary" id="onboardingBack3">Voltar</button>
+                    <button type="button" id="onboardingFinish">Começar minha caminhada</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="momentOverlay" class="moment-overlay">
+        <section class="moment-modal card">
+            <p class="label">Devocional personalizado</p>
+            <h2>Como está seu dia?</h2>
+            <p class="muted">Escreva com suas palavras. Seu devocional será montado a partir do que você compartilhar.</p>
+            <textarea id="momentInput" rows="4" placeholder="Ex: Acordei cansado, preocupado com contas e sem vontade de orar..."></textarea>
+            <button type="button" id="generateDevotionalButton">Montar meu devocional</button>
+            <button type="button" class="btn-secondary moment-skip-btn" id="skipMomentButton">Agora não</button>
+            <p class="moment-skip-hint muted">Sem problema — você verá o devocional padrão do dia.</p>
+            <p class="moment-hints-label muted">Precisa de inspiração? Toque para preencher (você pode editar):</p>
+            <div class="moment-hints" id="momentHints"></div>
+        </section>
+    </div>
+
+    <script src="JS/data.js"></script>
+    <script src="JS/moments.js"></script>
+    <script src="JS/journey.js"></script>
+    <script src="JS/bible.js"></script>
+    <script src="JS/app.js"></script>
+</body>
+
+</html>
