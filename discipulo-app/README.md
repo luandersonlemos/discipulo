@@ -1,10 +1,6 @@
-# Discípulo App (React + Supabase)
+# Discípulo App — Fase 3
 
-App React com migração gradual do protótipo HTML.
-
-## Rodar agora (modo local)
-
-Sem Supabase, o app usa **localStorage** no navegador (mesmos dados do protótipo).
+## Rodar local
 
 ```bash
 cd discipulo-app
@@ -12,24 +8,76 @@ npm install
 npm run dev
 ```
 
-Abra `http://localhost:5173` — o onboarding aparece na primeira vez.
+## Fase 3 — Monetização
 
-## Configurar Supabase (opcional)
+| Feature | Status |
+|---------|--------|
+| Paywall Premium (R$ 29,90/mês · R$ 249,90/ano) | ✅ |
+| Trial gratuito 7 dias | ✅ |
+| IA ilimitada no Premium | ✅ |
+| 3 planos exclusivos Premium | ✅ |
+| Backup na nuvem (Premium) | ✅ |
+| Exportar/importar JSON | ✅ |
+| Relatórios detalhados (Premium) | ✅ `/relatorios` |
+| PWA instalável | ✅ manifest + service worker |
+| Stripe Checkout | ✅ scaffold (opcional) |
+| React Native | 📋 Fase 3b (repo separado) |
 
-1. Crie projeto em [supabase.com](https://supabase.com)
-2. `copy .env.example .env` e preencha URL + anon key
-3. Execute `supabase/schema.sql` no SQL Editor
-4. Reinicie `npm run dev` — login com e-mail passa a funcionar
+## Páginas novas
 
-## O que já foi migrado
+- `/premium` — planos, trial, assinatura
+- `/relatorios` — dashboard de crescimento (Premium)
 
-- Onboarding (3 telas)
-- Home / dashboard (streak, cards, crescimento)
-- Devocional personalizado + "Agora não"
-- Jornada espiritual (5 níveis)
-- Leitor da Bíblia (ACF via bible-api.com)
+## Configurar pagamentos (Stripe)
 
-## Próximo
+1. Crie produtos no [Stripe Dashboard](https://dashboard.stripe.com)
+2. Configure secrets na Edge Function:
 
-- Diário, oração, planos, IA, favoritos e busca na Bíblia
-- Sincronização Supabase dos dados locais
+```bash
+supabase secrets set STRIPE_SECRET_KEY=sk_...
+supabase secrets set STRIPE_MONTHLY_PRICE_ID=price_...
+supabase secrets set STRIPE_ANNUAL_PRICE_ID=price_...
+supabase functions deploy manage-subscription
+```
+
+Sem Stripe, o botão "Assinar" ativa Premium em **modo demo** (para testes e portfólio).
+
+## SQL (ordem)
+
+1. `supabase/schema.sql`
+2. `supabase/schema-phase2.sql`
+3. `supabase/schema-phase3.sql`
+
+## Edge Functions
+
+```bash
+supabase functions deploy ask-ai
+supabase functions deploy manage-subscription
+```
+
+## Instalar como app (PWA)
+
+1. Abra no Chrome/Edge no celular ou desktop
+2. Menu → "Instalar aplicativo" (ou banner no app)
+3. Ícone na tela inicial
+
+## Testar Premium localmente
+
+1. Abra `/premium`
+2. Clique em **Começar trial grátis** (7 dias)
+3. Teste IA ilimitada, planos exclusivos e relatórios
+
+## Deploy
+
+```bash
+npm run build
+```
+
+Vercel: aponte para `discipulo-app`, output `dist`.
+
+## Próximo — Fase 4
+
+- Modo Igreja
+- Modo Família
+- App React Native (Expo)
+- Análise do diário pela IA

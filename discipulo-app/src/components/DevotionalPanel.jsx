@@ -6,6 +6,9 @@ import {
   renderVersesHtml
 } from "legacy:bible.js";
 import { getTodayDevotional, truncateText } from "../lib/devotional.js";
+import DevotionalAudio from "./DevotionalAudio.jsx";
+import { completePlanDay } from "../lib/plans.js";
+import { Link } from "react-router-dom";
 import {
   getCompletedDays,
   getTodayKey,
@@ -64,6 +67,7 @@ export default function DevotionalPanel({ onRefresh }) {
     const days = getCompletedDays();
     days.push(getTodayKey());
     writeJson("completedDays", days);
+    completePlanDay();
     onRefresh();
   }
 
@@ -79,6 +83,7 @@ export default function DevotionalPanel({ onRefresh }) {
 
       <h3>{devotional.title}</h3>
       <p className="verse-ref">{devotional.verse}</p>
+      <DevotionalAudio />
 
       <div className="devotional-section">
         <strong>Resumo</strong>
@@ -98,6 +103,7 @@ export default function DevotionalPanel({ onRefresh }) {
         {!loading && !error && (
           <div className="bible-passage" dangerouslySetInnerHTML={{ __html: passageHtml }} />
         )}
+        <Link to="/biblia" className="link-button">Abrir na Bíblia</Link>
       </div>
 
       <div className="devotional-section">
