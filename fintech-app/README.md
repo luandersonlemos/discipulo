@@ -26,10 +26,13 @@ Abre em [http://localhost:5174](http://localhost:5174)
 
 ## Deploy (Vercel)
 
+Conectado ao repositório [luandersonlemos/discipulo](https://github.com/luandersonlemos/discipulo) — cada push na `main` que alterar `fintech-app/` faz deploy automático.
+
+**Produção:** https://fintech-app-nine-tan.vercel.app
+
 ```bash
 cd fintech-app
 npm run build
-# Conecte a pasta fintech-app na Vercel
 ```
 
 ## Stack
